@@ -1,0 +1,285 @@
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
+
+{% endblock %}
+
+{% block title %}
+   auth home
+{% endblock %}
+
+{% block content %}
+<div class="main">
+
+    <div class="console">
+
+        <form id="forme">
+            <input type="email" name="email" placeholder="enter email" id="name" class="ins">
+
+            <input type="password" placeholder="password" id="passworde" class="ins">
+            <button class="ins">register</button>
+        </form>
+        <form id="formp" style="display: none;">
+
+            <input type="tel" id="tel" class="ins">
+
+            <input type="password" placeholder="password" id="passwordp" class="ins">
+            <button class="ins">register</button>
+
+        </form>
+
+    </div>
+    <div class="options">
+
+        <div class="btns">
+
+            <button id="ereg" style="display: none;">register with email</button>
+            <button id="preg" >register with phone</button>
+
+        </div>
+        <div class="logs">
+
+            <p id="accountOption">already have an account?</p><p><em><button id="logbtn">login</button></em></p>
+
+        </div>
+
+    </div>
+    <button id="out">logout</button>
+
+</div>
+
+{% endblock %}
+    {%block script%}
+    <script>
+
+        const forme = document.getElementById('forme')
+        const formp = document.getElementById('formp')
+        const name = document.getElementById('name')
+        const phone = document.getElementById('tel')
+        const passworde = document.getElementById('passworde')
+        const passwordp = document.getElementById('passwordp')
+        const withEmail = document.getElementById('ereg')
+        const withPhone = document.getElementById('preg')
+        const loginbtn = document.getElementById('logbtn')
+        const accountOption = document.getElementById('accountOption')
+
+        let csrfToken = get_token('csrftoken');
+
+
+        //register with email
+        withEmail.addEventListener('click', () => {
+            withEmail.style.display = 'none'
+            withPhone.style.display = 'block'
+            formp.style.display = 'none'
+            forme.style.display = 'block'
+        })
+        forme.addEventListener('submit', (e) => {
+            e.preventDefault()
+            if(!forme.email.value){
+                alert('email field is empty')
+                return
+            }
+            if(loginValue === 'register'){
+                alert('register')
+                registerUser(forme.email.value, forme.passworde.value, 'email')
+            }
+            else if(loginValue === 'login'){
+                alert('login')
+                loginUser(forme.email.value, forme.passworde.value)
+            }
+            //alert(forme.email.value)
+        })
+
+        function registerUser(x,y,z){
+            const formData = new FormData()
+            formData.append('username', x)
+            formData.append('password', y)
+            formData.append('type', z)
+            fetch('/user-auth/register/', {
+                method: 'POST',
+                headers: {
+                    'X-Csrftoken': csrfToken,
+                },
+                body: formData
+            })
+            .then(async response => {
+                const data = await response.json()
+                if(!response.ok){
+                    throw new Error('something went wrong')
+                }
+                if(data.error){
+                    alert(data.error)
+                }
+                if(data.success){
+                    alert(data.success)
+                }
+            })
+            .catch(error => alert(error.message))
+        }
+
+
+        function loginUser(x,y){
+            const formData = new FormData()
+            formData.append('username', x)
+            formData.append('password', y)
+            fetch('/user-auth/login/', {
+                method: 'POST',
+                headers: {
+                    'X-Csrftoken': csrfToken,
+                },
+                body: formData
+            })
+            .then(async response => {
+                const data = await response.json()
+                if(!response.ok){
+                    throw new Error('something went wrong')
+                }
+                if(data.error){
+                    alert(data.error)
+                }
+                if(data.success){
+                    alert(data.success)
+                }
+            })
+            .catch(error => alert(error.message))
+        }
+
+        //register with phone
+        withPhone.addEventListener('click', () => {
+            withEmail.style.display = 'block'
+            withPhone.style.display = 'none'
+            forme.style.display = 'none'
+            formp.style.display = 'block'
+
+        })
+
+        formp.addEventListener('submit', (e) => {
+            e.preventDefault()
+            if(!formp.tel.value || formp.passwordp.value.length < 6){
+                alert('error')
+                return
+            }
+            if(loginValue === 'register'){
+                alert('register')
+                if(!iti.isValidNumber()){
+                    alert('enter valid number')
+                    return
+                }
+                let num = iti.getNumber()
+                formp.tel.value = num
+        
+                registerUser(num, formp.passwordp.value, 'phone')
+                
+            }
+            else if(loginValue === 'login'){
+                if(!iti.isValidNumber()){
+                    alert('enter a valid phone no')
+                    return
+                }
+                let num = iti.getNumber()
+                loginUser(num, formp.passwordp.value)
+            }
+            //alert(forme.email.value)
+        })
+
+
+        //logout
+        const outbtn = document.getElementById('out')
+        outbtn.addEventListener('click', () => {
+            logout()
+        })
+        function logout(){
+            fetch('/user-auth/logout/', {
+                method: 'POST',
+                headers: {
+                    'X-Csrftoken': csrfToken
+                }
+            })
+            .then(async response => {
+                const data = await response.json()
+                if(!response.ok){
+                    throw new Error('server error')
+                }
+                alert(data.success)
+            })
+            .catch(error => alert(error.message))
+        }
+
+
+
+        //login click
+        let loginValue = 'register'
+        loginbtn.addEventListener('click', () => {
+            if(loginValue === 'register'){
+                withEmail.textContent = 'login with email'
+                withPhone.textContent = 'login with phone'
+                loginValue = 'login'
+                loginbtn.textContent = 'register'
+                accountOption.textContent = "don't have an account ?"
+            }
+            else if(loginValue === 'login'){
+                withEmail.textContent = 'register with email'
+                withPhone.textContent = 'register with phone'
+                loginValue = 'register'
+                loginbtn.textContent = 'login'
+                accountOption.textContent = "already have an account ?"
+            }
+            
+        })
+            
+        
+
+
+        const input = phone//document.querySelector("#tel");
+            const iti = window.intlTelInput(input, {
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+                initialCountry: "auto",
+                geoIpLookup: function(callback) {
+                    fetch("https://ipapi.co/json/")
+                    .then(res => res.json())
+                    .then(data => callback(data.country_code))
+                    .catch(() => callback("us"));
+                },
+                nationalMode: false,
+                formatOnDisplay: true,
+                separateDialCode: false
+            });
+
+        
+
+        function get_token(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie starts with the desired name
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = cookie.substring(name.length + 1);
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        
+
+
+        
+        // Optional: you can get full number before submitting
+        document.querySelector("form").addEventListener("submit", function(e) {
+          const fullNumber = iti.getNumber();
+          input.value = fullNumber;
+
+
+
+        });
+      </script>
+
+    
+        {% endblock %}

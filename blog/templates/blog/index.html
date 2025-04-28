@@ -1,0 +1,76 @@
+
+        <h3>{{message}}</h3>
+        <div class="btns">
+            <button id="create">create</button>
+            <button id="view">view all</button>
+            <button id="auth">authenticate</button>
+        </div>
+    </div>
+    <script>
+        const btns = document.querySelectorAll('.btns button');
+        btns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.target;
+
+                goTo(target)
+            })
+            
+            
+        })
+
+        //go to function
+        function goTo(x){
+                if(x.id === 'create'){
+                    authenticate().then(authenticated => {
+                        if(!authenticated.isVerified){
+                            alert('you are not verified yet')
+                            return
+                        }
+
+                        if(!authenticated.isEditor){
+                            alert('you are not an editor')
+                            return
+                        }
+                        
+                        if(window.location.href == '/blog/create-blog-home/'){
+                            window.location.reload()
+                        }
+                        window.location.href ='/blog/create-blog-home/'
+                    })
+                }
+                else if(x.id === 'view'){
+                    window.location.href = '/blog/view-all/'
+                }
+                else if(x.id ='auth'){
+                    window.location.href = '/user-auth/'
+                }
+                }
+
+        //auth function
+        async function authenticate(){
+            try{
+                const response = await fetch('/blog/check-auth/')
+                const data = await response.json()
+
+                if(!response.ok){
+                    throw new Error('server error')
+                }
+                if(data.error){
+                    alert(data.error)
+                    return false
+                }
+                else if(data.success){
+                    return {isEditor:data.is_editor, isVerified:data.is_verified}
+                }
+                else{
+                    return false
+                }
+            }
+            catch(error){
+                alert(error.message)
+                return false
+            }
+        }
+    </script>
+</body>
+</html>

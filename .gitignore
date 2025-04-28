@@ -1,0 +1,14 @@
+# Ignore node_modules folder
+node_modules/
+
+# Ignore Python cache
+__pycache__/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment variables
+.env
+db.sqlite3
+media/

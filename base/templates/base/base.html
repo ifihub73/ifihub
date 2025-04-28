@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block head %}{% endblock %}
+    <title>{%block title%}{% endblock %}</title>
+</head>
+<body>
+    <div class="container">
+        <h1><a href="/blog/view-all/">ifiHub</a></h1>
+        <nav>
+            <ul>{% if not user.is_authenticated%}
+                <li><a href="/user-auth/">login</a></li>
+                {% endif%}
+                {% if user.is_authenticated and user.is_editor %}
+                <li><a href="/user-profile/{{user.pk}}/">{{user.first_name}}</a></li>
+                {%endif%}
+                {% if user.is_authenticated and user.is_verified %}
+                {%if not user.is_editor %}
+                <li><a href="/transactions/editor-request-home">become an editor</a></li>
+                {%endif%}
+                {%endif%}
+                {% if user.is_authenticated and not user.is_verified %}
+                <li><a href="/transactions/">verify account</a></li>
+                {%endif%}
+                {% if user.is_authenticated and user.is_editor %}
+                <li><a href="/blog/create-blog-home/">create blog</a></li>
+                {%endif%}
+
+
+            </ul>
+        </nav>
+        {% block content %}{%endblock%}
+    </div>
+    {%block script%}{%endblock%}
+</body>
+</html>

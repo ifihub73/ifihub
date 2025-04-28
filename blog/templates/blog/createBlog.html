@@ -1,0 +1,168 @@
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+    {% load custom_filters %}
+{% endblock %}
+
+{% block title %}
+    blog create home
+{% endblock %}
+
+{% block content %}
+    
+<h5>start creating</h5>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="title" id="title" placeholder="Title">
+    
+    <!-- This div becomes the editor -->
+    <div id="editor" contenteditable="true"> write here ....</div>
+    
+    <!-- This hidden input will get the HTML from the editor -->
+    <input type="hidden" name="content" id="hidden-content">
+  
+    <button type="submit">Save</button>
+</form>
+{% endblock %}
+    {%block script%}
+
+    <script>
+
+      let csrfToken = get_token('csrftoken');
+
+
+      //testing debugging 
+      
+class MyUploadAdapter {
+  constructor(loader) {
+      this.loader = loader;
+  }
+
+  upload() {
+      return this.loader.file.then(file => {
+          const data = new FormData();
+          data.append('upload', file);
+
+          return fetch('/blog/upload/', {
+              method: 'POST',
+              body: data
+          })
+          .then(response => response.json())
+          .then(result => {
+              return { default: result.url }; // 👈 important for CKEditor
+          });
+      });
+  }
+
+  abort() {}
+}
+
+function MyCustomUploadAdapterPlugin(editor) {
+  editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+      return new MyUploadAdapter(loader);
+  };
+}
+
+/*InlineEditor
+  .create(document.querySelector('#editor'), {
+      extraPlugins: [MyCustomUploadAdapterPlugin],
+  })
+  .then(editor => {
+      console.log('✅ CKEditor ready!', editor);
+  })
+  .catch(error => {
+      console.error('❌ Error initializing CKEditor:', error);
+  });
+//end debugging */
+
+
+      InlineEditor
+        .create(document.querySelector('#editor'), {
+          extraPlugins: [MyCustomUploadAdapterPlugin],
+        })
+        .then(editor => {
+          window.editor = editor;
+          console.log('✅ CKEditor ready!', editor);
+
+    
+          // When submitting the form, copy the editor HTML to the hidden input
+          document.querySelector('form').addEventListener('submit', (e) => {
+
+            e.preventDefault()
+
+            const title = document.getElementById('title')
+            content = document.getElementById('hidden-content')
+
+            content.value = editor.getData();
+
+            if(title.value.trim().length < 5){
+              alert('title should be above 5 characters')
+              return
+            }
+            if(content.value.split(' ').length < 20){
+              alert('content must be up to 20 words')
+              return
+            }
+
+
+            const formData = new FormData()
+            formData.append('title', title.value)
+            formData.append('content', content.value)
+
+            createBlog(formData)
+            
+          });
+        })
+        .catch(error => {
+          console.error(error);
+        });
+
+        async function createBlog(x){
+          try{
+            const response = await fetch('/blog/create-blog/', {
+            method: 'POST',
+            headers: {
+              'X-Csrftoken': csrfToken,
+            },
+            body: x
+           })
+
+           const data = await response.json()
+
+           if(!response.ok){
+              throw new Error('could not process request')
+           }
+           if(data.error){
+              alert(data.error)
+           }
+
+           if(data.success){
+            const obj = data.success
+            alert(`[blogId: ${obj.id}, author: ${obj.author}, authorId: ${obj.author_id}`)
+           }
+          }
+          catch(error){
+            alert(error.message)
+          }
+           
+        }
+
+      function get_token(name) {
+         let cookieValue = null;
+         if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Check if this cookie starts with the desired name
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = cookie.substring(name.length + 1);
+                    break;
+                }
+            }
+         }
+      return cookieValue;
+  }
+  </script>
+        {% endblock %}

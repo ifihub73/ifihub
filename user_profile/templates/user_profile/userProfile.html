@@ -1,0 +1,50 @@
+
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+    {% load custom_filters %}
+{% endblock %}
+
+{% block title %}
+{{data.first_name}}'s Page
+{% endblock %}
+
+{% block content %}
+<div class="name">
+    <strong>{{data.first_name}} {{data.last_name}}</strong>
+</div>
+<div class="totalBlogs">
+    <strong>Total Blogs: <i>{{data.total_blogs}}</i></strong>
+</div>
+<div class="total-likes">
+    <strong>Total Likes: <i>{{data.total_likes}}</i></strong>
+</div>
+<div class="total-likes">
+    <strong>Total Comments: <i>{{data.total_comments}}</i></strong>
+</div>
+
+{% if data.is_user %}
+<div class="total-likes">
+    <strong>Pending Blogs: <i>{{data.pending_blogs}}</i></strong>
+</div>
+<div class="edit-profile">
+    <strong><a href="/user-profile/edit-profile-home/{{data.id}}"><i>edit profile</i></a></strong>
+</div>
+{% endif%}
+
+<h2>All Blogs</h2>
+<ul>
+    {%for blog in data.all_blogs%}
+        <li>
+            <a href="/blog/one-blog/{{blog.id}}">{{blog.title}}</a>
+            <span>{{blog.date|time_ago}}</span><br>
+            <span>{{blog.snippet|safe}}</span><br>
+            <span><strong>Likes: </strong>{{blog.total_likes}}</span>
+            <span><strong>Comments: </strong>{{blog.total_comments}}</span><hr>
+        </li>
+    {%endfor%}
+</ul>
+
+{% endblock %}
+   

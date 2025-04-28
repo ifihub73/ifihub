@@ -1,0 +1,97 @@
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+    {% load custom_filters %}
+{% endblock %}
+
+{% block title %}
+   editor request
+{% endblock %}
+
+{% block content %}
+    
+{% if error %}
+<h1>{{error}}</h1>
+{%if verify%}
+    <a href="/transactions/"> verify now</a>
+{% endif %}
+{% else %}
+<div class="container">
+
+    <h1><i>thank you for your interest in becoming one of our editors</i></h1>
+    <form action="" id="description">
+        <p><i>send us a brief note about your passion on becoming one of our editors and what you are going to contribute to the platform</i></p>
+        <textarea name="text" id="text" cols="50" rows="20"></textarea><br>
+        <button id="btn">submit</button>
+    </form>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
+{%block script%}
+<script>
+    const form = document.getElementById('description')
+    form.addEventListener('submit', (e) => {
+        e.preventDefault()
+        const text = document.getElementById('text')
+        const btn = document.getElementById('btn')
+        btn.disabled = true
+        submitRequest(text)
+        btn.disabled = false
+    })
+
+    //function that submits request
+    function submitRequest(x){
+        const formData = new FormData()
+        formData.append('text', x.value)
+
+        fetch('/transactions/submit-request/', {
+            method: 'POST',
+            headers: {
+                'X-csrftoken': get_token('csrftoken'),
+            },
+            body: formData
+        })
+        .then(async response => {
+            const data = await response.json()
+            if(!response.ok){
+                throw new Error('server error')
+            }
+            if(!data.success){
+                throw new Error(data.error)
+            }
+            document.querySelector('#description').style.display = 'none'
+            alert(data.result)
+            x.value = ''
+
+        })
+        .catch(error => {
+            alert(error.message)
+
+        })
+
+    }
+
+    //csrf token generator
+    function get_token(name) {
+           let cookieValue = null;
+           if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  // Check if this cookie starts with the desired name
+                  if (cookie.startsWith(name + '=')) {
+                      cookieValue = cookie.substring(name.length + 1);
+                      break;
+                  }
+              }
+           }
+        return cookieValue;
+    }
+
+</script>
+    
+        {% endblock %}

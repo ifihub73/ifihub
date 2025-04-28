@@ -1,0 +1,46 @@
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+    {% load custom_filters %}
+{% endblock %}
+
+{% block title %}
+    blog home
+{% endblock %}
+
+{% block content %}
+    <h1>welcome to all blog</h1>
+    {% for blog in blogs %}
+
+        <div class="item">
+            <h3><a href="" id="{{blog.id}}">{{blog.title}}</a></h3><br>
+            <i>{{blog.date|time_ago}}</i><br>
+            <h6>Author: <em>{{blog.author}}</em></h6>
+            <h6>Likes: <em>{{blog.likes}}</em></h6>
+            <h6>Comments: <em>{{blog.comments}}</em></h6>
+            <div class="content">
+                {{blog.content | safe}} 
+                <p>*....*</p>
+            </div>
+        </div>
+
+    {% endfor%}
+{% endblock %}
+    {%block script%}
+    <script>
+
+        
+        const links = document.querySelectorAll('.item h3 a')
+        links.forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault()
+                const target = e.target;
+                window.location.href = `/blog/one-blog/${target.id}`
+            })
+        })
+
+    </script>
+
+    
+        {% endblock %}

@@ -1,0 +1,40 @@
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+    {% load custom_filters %}
+{% endblock %}
+
+{% block title %}
+    profile edit home
+{% endblock %}
+
+{% block content %}
+    {% if error != ''%}
+        <h3>{{error}}</h3>
+    {%elif error == '' and id%}
+        <h1>WELCOME TO YOUR PROFILE EDIT PANNEL</h1>
+        <form id="edit-form">
+            <input type="text" id="first-name" placeholder="edit first name">
+            <input type="text" id="last-name" placeholder="edit last name">
+            <button>submit</button>
+        </form>
+    {%endif%}
+{% endblock %}
+    {%block script%}
+    <script>
+
+        
+        const links = document.querySelectorAll('.item h3 a')
+        links.forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault()
+                const target = e.target;
+                window.location.href = `/blog/one-blog/${target.id}`
+            })
+        })
+
+    </script>
+
+    
+        {% endblock %}

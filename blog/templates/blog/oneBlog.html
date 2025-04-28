@@ -1,0 +1,48 @@
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+    {% load static %}
+{% endblock %}
+
+{% block title %}
+{{data.title}}
+{% endblock %}
+
+{% block content %}
+{% if found%}
+<h1>{{data.title}}</h1>
+<p id="author" data-id="{{data.author_id}}">By: <a href="/user-profile/{{data.author_id}}"><i>{{data.author}}</i></a></p>
+<i>{{data.date}}</i><br>
+<span><button class="like-btn" data-id="{{data.id}}">{{data.likes_count}} likes</button></span>
+<h4>Comments: <i id="comment-count">{{data.comments_count}}</i></h4>
+<p>
+    {{data.content | safe}}
+</p>
+<h3>Those who liked</h3>
+<div style="display: none;" class="likers">
+    {% for i in data.likes%}
+        <span>{{i}}</span>, 
+    {% endfor%}
+</div>
+
+
+<h3>comments</h3>
+<form id="comment" data-id="{{data.id}}">
+    <input type="text" id="message" placeholder="post your comment">
+    <button>post</button>
+</form>
+<div class="comments">
+    {% for i in data.comments%}
+        <span>{{i.user}} => {{i.comment}}, </span><br>
+    {% endfor%}
+</div>
+
+{%else%}
+<h1>NO DATA FOUND</h1>
+{%endif%}
+{% endblock %}
+    {%block script%}
+         <script src="{% static 'blog/oneBlog.js' %}"></script>
+    
+        {% endblock %}

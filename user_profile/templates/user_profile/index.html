@@ -1,0 +1,48 @@
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+    {% load custom_filters %}
+{% endblock %}
+
+{% block title %}
+Profile Home Page
+{% endblock %}
+
+{% block content %}
+<h1>WELCOME TO OUR CREATORS PROFILE PAGE</h1>
+{% if error != '' %}
+    <h1>
+        {{error}}
+    </h1>
+    <a href="/user-profile/">Go Back</a>
+{%else%}
+    <strong>Here is A List of our Creators</strong>
+    <ul>
+        {% for profile in profiles %}
+            <li>
+                <a href="/user-profile/{{profile.id}}/">{{profile.first_name}}</a>
+            </li>
+        {% endfor%}
+    </ul>
+{% endif%}
+{% endblock %}
+    {%block script%}
+    <script>
+
+        
+        const links = document.querySelectorAll('.item h3 a')
+        links.forEach((link) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault()
+                const target = e.target;
+                window.location.href = `/blog/one-blog/${target.id}`
+            })
+        })
+
+    </script>
+
+    
+        {% endblock %}
+
+    

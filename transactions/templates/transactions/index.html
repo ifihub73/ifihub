@@ -1,0 +1,55 @@
+
+
+{% extends 'base/base.html' %}
+
+{%block head %}
+    {% load custom_filters %}
+    {% load static%}
+{% endblock %}
+
+{% block title %}
+    blog home
+{% endblock %}
+
+{% block content %}
+{% if error != '' %}
+<h1>{{error}}</h1>
+{%elif error == '' %}
+{% if not profile %}
+
+<div class="verify-pro" >
+<h1>WELCOME TO USER VERIFICATION PAGE</h1>
+<form action="/transactions/save-profile/" method="post" id="profile-form">
+    {% csrf_token %}
+    <p><i>Update Your Information Before Proceeding With Verification</i></p>
+    <input type="text" placeholder="enter your first name" id="first-name"><br><br>
+    <input type="text" placeholder="enter your last name" id="last-name"><br><br>
+    <button id="proceed">Proceed</button>
+</form>
+</div>
+
+{% else %}
+<div class="question-lab" style="display: none;">
+<form method="post" id="ans">
+    {%csrf_token%}
+    <p><i>answer this simple maths to verify your account</i></p>
+    <div class="board">
+        <i id="qs">2 + 3 = ?</i><br>
+        <input type="number" name="answer" id="answer">
+        <button id="ansbtn">(=)</button>
+    </div>
+</form>
+</div>
+
+{% endif %}
+
+
+
+{%endif%}
+
+{% endblock %}
+    {%block script%}
+    <script src="{% static 'transactions/index.js' %}">
+
+    </script>
+        {% endblock %}
