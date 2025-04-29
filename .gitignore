@@ -12,3 +12,4 @@ Thumbs.db
 .env
 db.sqlite3
 media/
+staticfiles/

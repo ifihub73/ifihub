@@ -27,6 +27,9 @@
                 {% if user.is_authenticated and user.is_editor %}
                 <li><a href="/blog/create-blog-home/">create blog</a></li>
                 {%endif%}
+                {% if user.is_authenticated%}
+                <li><a href="/user-auth/logout/">logout</a></li>
+                {%endif%}
 
 
             </ul>
