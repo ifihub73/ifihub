@@ -102,7 +102,7 @@
             fetch('/user-auth/register/', {
                 method: 'POST',
                 headers: {
-                    'X-Csrftoken': csrfToken,
+                    'X-Csrftoken': get_token('csrftoken'),
                 },
                 body: formData
             })
