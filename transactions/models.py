@@ -12,8 +12,14 @@ class EditorRequest(models.Model):
     approved = models.BooleanField(default=False)
 
     def save(self):
+        if self.approved:
+            approve(self)
+        super().save()
+
+    def approve(self):
         user = self.user
         user.is_editor = True
         user.save()
+        self.approved = True
         super().save()
         

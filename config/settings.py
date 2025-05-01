@@ -144,3 +144,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CSRF_COOKIE_SECURE = True        # Required on HTTPS (like Render)
 CSRF_COOKIE_SAMESITE = 'Lax'     # Or 'None' if frontend and backend are on different domains
 SESSION_COOKIE_SECURE = True
+
+INSTALLED_APPS += [
+    'cloudinary',
+    'cloudinary_storage',
+]
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CL_CLOUD_NAME'),
+    'API_KEY': os.getenv('CL_API_KEY'),
+    'API_SECRET': os.getenv('CL_API_SECRET'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
