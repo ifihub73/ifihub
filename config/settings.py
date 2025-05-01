@@ -139,3 +139,8 @@ AUTH_USER_MODEL = 'user_auth.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+CSRF_COOKIE_SECURE = True        # Required on HTTPS (like Render)
+CSRF_COOKIE_SAMESITE = 'Lax'     # Or 'None' if frontend and backend are on different domains
+SESSION_COOKIE_SECURE = True
