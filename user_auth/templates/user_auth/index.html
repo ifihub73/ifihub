@@ -104,6 +104,7 @@
                 headers: {
                     'X-Csrftoken': get_token('csrftoken'),
                 },
+                credentials: "include", 
                 body: formData
             })
             .then(async response => {
