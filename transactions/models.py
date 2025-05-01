@@ -13,7 +13,7 @@ class EditorRequest(models.Model):
 
     def save(self):
         if self.approved:
-            approve(self)
+            self.approve(self)
         super().save()
 
     def approve(self):
